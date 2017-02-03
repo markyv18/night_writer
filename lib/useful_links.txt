@@ -1,0 +1,2 @@
+http://stackoverflow.com/questions/11688466/select-all-elements-from-one-column-in-an-array-of-arrays-in-ruby
+
