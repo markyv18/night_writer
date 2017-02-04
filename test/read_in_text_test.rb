@@ -4,6 +4,8 @@ require './lib/read_in_text.rb'
 
 class ReadInTest < Minitest::Test
 
+# include these characters in the message.txt to satisfy the tests A R G V ? !  
+
   def test_weve_got_text
     read = ReadText.new(ARGV[0])
     assert read.imported_text.include?("A")
