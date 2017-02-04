@@ -13,8 +13,4 @@ class ReadInTest < Minitest::Test
     assert read.include("f")
     assert read.include("_")
   end
-
-  def test_left_is_nil
-    node = Node.new(71, "Hannibal Buress: Animal Furnace")
-    assert_nil node.left
-  end
+end

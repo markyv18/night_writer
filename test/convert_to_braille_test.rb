@@ -15,3 +15,4 @@ class NodeTest < Minitest::Test
     node = Node.new(71, "Hannibal Buress: Animal Furnace")
     assert_nil node.left
   end
+end
