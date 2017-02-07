@@ -1,4 +1,4 @@
-require_relative './read_in_braille'
+require './lib/read_in_braille'
 # Imports braille file and writes conversion to Message.txt
 class NightRead
   attr_reader :text_output,
@@ -55,6 +55,10 @@ class NightRead
     text_sentence.gsub!(/\#./) { |letter| numbers[letter] }
   end
 
+  def write_to_file
+    File.write('./data/' + ARGV[1], text_sentence)
+  end
+
   def alphabet
     @alphabet = { 'a' => ['0.', '..', '..'], 'b' => ['0.', '0.', '..'],
                   'c' => ['00', '..', '..'], 'd' => ['00', '.0', '..'],
@@ -73,12 +77,10 @@ class NightRead
                   ',' => ['..', '0.', '..'], '-' => ['..', '..', '00'],
                   '.' => ['..', '00', '.0'], '?' => ['..', '0.', '00'],
                   '^' => ['..', '..', '.0'], '#' => ['.0', '.0', '00'],
-                  ' ' => ['..', '..', '..'] } 
-
-                  #'and' => ['00', '0.', '00'],
-                  # 'for' => ['00', '00', '00'], 'of' => ['0.', '00', '00'],
-                  # 'the' => ['.0', '0.', '00'], 'with' => ['.0', '00', '00'],
-                  # 'ch' => ['0.', '..', '.0'] }
+                  ' ' => ['..', '..', '..'], 'and' => ['00', '0.', '00'],
+                  'for' => ['00', '00', '00'], 'of' => ['0.', '00', '00'],
+                  'the' => ['.0', '0.', '00'], 'with' => ['.0', '00', '00'],
+                  'ch' => ['0.', '..', '.0'] }
   end
 
   def numbers
@@ -97,4 +99,5 @@ night.convert_to_text_array
 night.join_array_into_string
 night.capitalize
 night.numberize
-p night.text_sentence
+night.text_sentence
+night.write_to_file
