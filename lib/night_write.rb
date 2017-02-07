@@ -8,10 +8,11 @@ attr_reader :braille_output, :text_to_convert
     read = ReadText.new(ARGV[0])
     @text_to_convert = read.imported_text.chars
     @braille_output = []
+    
     @convert_chars_key = {"a" => ["0.","..",".."], "b" => ["0.","0.",".."], "c" => ["00","..",".."], "d" => ["00",".0",".."],
     "e" => ["0.",".0",".."], "f" => ["00","0.",".."], "g" => ["00","00",".."], "h" => ["0.","00",".."],
     "i" => [".0","0.",".."], "j" => [".0","00",".."], "k" => ["0.","..","0."], "l" => ["0.","0.","0."],
-    "m" => ["00","..","0."], "n" => ["00",".0","0."], "o" => ["0.",".0","0."], "p" => ["00","0.","0."],
+    "m" => ["00","..","0."], "n" => ["00",".0","0."], "o" => ["0.",".0","0."], "p" => ["00","0.","0."], "q" => ["00","00","0."],
     "r" => ["0.","00","0."], "s" => [".0","0.","0."], "t" => [".0","00","0."], "u" => ["0.","..","00"],
     "v" => ["0.","0.","00"], "w" => [".0","00",".0"], "x" => ["00","..","00"], "y" => ["00",".0","00"],
     "z" => ["0.",".0","00"], "!" => ["..","00","0."], "'" => ["..","..","0."], "," => ["..","0.",".."],
@@ -19,6 +20,12 @@ attr_reader :braille_output, :text_to_convert
     "#" => [".0", ".0", "00"], " " => ["..","..",".."]}
     @convert_nums_key  = {"0" => ".000..", "1" => "0.....", "2" => "0.0...","3" => "00....", "4" => "00.0..",
       "5" => "0..0..","6" => "000...", "7" => "0000..", "8" => "0.00..","9" =>  ".00...", :number => ".0.0.."}
+    @braille_print1 = []
+    @braille_print2 = []
+    @braille_print3 = []
+    @braille_p1 = []
+    @braille_p2 = []
+    @braille_p3 = []
   end
 
   def convert_to_braille
@@ -39,9 +46,20 @@ attr_reader :braille_output, :text_to_convert
       #   braille << letters_to_braille[:capital] << letters_to_braille[char.downcase]
       end
     end
-    @braille_output.flatten!
-    @braille_print = @braille_output.join
+    @braille_output.each do |two_line|
+      @braille_print1 << two_line[0]
+      @braille_print2 << two_line[1]
+      @braille_print3 << two_line[2]
+    end
+    @braille_print1 << "\n"
+    @braille_print2 << "\n"
+    @braille_print3 << "\n"
+    @braille_p1 = @braille_print1.join
+    @braille_p2 = @braille_print2.join
+    @braille_p3 = @braille_print3.join
   end
+
+
 
   # def braille_numbers_to_text(message, char)
   #   next_character_index = message.index(char) + 1
@@ -99,8 +117,14 @@ attr_reader :braille_output, :text_to_convert
 #
 # end
 
+  def print_braille_lines
+    p @braille_p1
+    p @braille_p2
+    p @braille_p3
+  end
+
   def write_to_braille_file
-    File.write(ARGV[1], @braille_print)
+    File.write(ARGV[1], @braille_p1)
   end
 
 end
