@@ -1,4 +1,4 @@
-require_relative './read_in_braille'
+require './lib/read_in_braille'
 # Imports braille file and writes conversion to Message.txt
 class NightRead
   attr_reader :text_output,
@@ -6,7 +6,7 @@ class NightRead
               :braille_array,
               :braille_sentence,
               :braille_letter,
-              :text_sentence_array,
+              :text_array,
               :text_sentence
 
   def initialize
@@ -21,38 +21,42 @@ class NightRead
   end
 
   def reduce_to_one_line
-    until braille_array[3].nil?
-      braille_array[0] += braille_array.delete_at(3)
-      braille_array[1] += braille_array.delete_at(3)
-      braille_array[2] += braille_array.delete_at(3)
+    combine_line until braille_array[3].nil?
+  end
+
+  def combine_line
+    for i in 0..2
+      braille_array[i] += braille_array.delete_at(3)
     end
   end
 
   def make_lettered_array
-    until braille_array[0].empty?
-      make_letter
-      braille_sentence << braille_letter
-    end
-    braille_sentence
+    make_letter until braille_array[0].empty?
   end
 
   def make_letter
-    @braille_letter = braille_array.map do |line|
-      line.slice!(0..1)
-    end
+    @braille_letter = braille_array.map { |line| line.slice!(0..1) }
+    braille_sentence << braille_letter
   end
 
-  def convert_to_text
-    @text_sentence_array = braille_sentence.map do |letter|
-      alphabet.key(letter)
-    end
-    @text_sentence = text_sentence_array.join
+  def convert_to_text_array
+    @text_array = braille_sentence.map { |letter| alphabet.key(letter) }
   end
 
-  def capitalize_and_numberize
+  def join_array_into_string
+    @text_sentence = text_array.join
+  end
+
+  def capitalize
     text_sentence.gsub!(/\^./) { |letter| letter.delete('^').upcase }
+  end
+
+  def numberize
     text_sentence.gsub!(/\#./) { |letter| numbers[letter] }
-    text_sentence
+  end
+
+  def write_to_file
+    File.write('./data/' + ARGV[1], text_sentence)
   end
 
   def alphabet
@@ -73,7 +77,10 @@ class NightRead
                   ',' => ['..', '0.', '..'], '-' => ['..', '..', '00'],
                   '.' => ['..', '00', '.0'], '?' => ['..', '0.', '00'],
                   '^' => ['..', '..', '.0'], '#' => ['.0', '.0', '00'],
-                  ' ' => ['..', '..', '..'] }
+                  ' ' => ['..', '..', '..'], 'and' => ['00', '0.', '00'],
+                  'for' => ['00', '00', '00'], 'of' => ['0.', '00', '00'],
+                  'the' => ['.0', '0.', '00'], 'with' => ['.0', '00', '00'],
+                  'ch' => ['0.', '..', '.0'] }
   end
 
   def numbers
@@ -88,5 +95,9 @@ night = NightRead.new
 puts night.braille_to_convert
 night.convert_to_array
 night.make_lettered_array
-night.convert_to_text
-p night.capitalize_and_numberize
+night.convert_to_text_array
+night.join_array_into_string
+night.capitalize
+night.numberize
+night.text_sentence
+night.write_to_file
