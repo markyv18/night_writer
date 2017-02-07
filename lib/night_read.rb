@@ -1,6 +1,7 @@
 require './lib/read_in_braille'
 require './lib/dictionary'
 # Imports braille file and writes conversion to Message.txt
+
 class NightRead
   attr_reader :text_output,
               :braille_to_convert,
@@ -9,15 +10,15 @@ class NightRead
               :braille_letter,
               :text_array,
               :text_sentence,
-              :alphabet,
-              :numbers
+              :alphabet_hash,
+              :numbers_hash
 
-  def initialize
-    read = ReadBraille.new(ARGV[0])
+  def initialize(read_file = ARGV[0])
+    read = ReadBraille.new(read_file)
     @braille_to_convert = read.imported_braille
     dictionary = Dictionary.new
-    @alphabet = dictionary.alphabet
-    @numbers = dictionary.numbers
+    @alphabet_hash = dictionary.alphabet
+    @numbers_hash = dictionary.numbers
     @braille_sentence = []
   end
 
@@ -46,7 +47,7 @@ class NightRead
   end
 
   def convert_to_text_array
-    @text_array = braille_sentence.map { |letter| alphabet.key(letter) }
+    @text_array = braille_sentence.map { |letter| alphabet_hash.key(letter) }
   end
 
   def join_array_into_string
@@ -58,24 +59,33 @@ class NightRead
   end
 
   def numberize
-    text_sentence.gsub!(/\#./) { |letter| numbers[letter] }
+    text_sentence.gsub!(/\#./) { |letter| numbers_hash[letter] }
   end
 
   def write_to_file
     File.write('./data/' + ARGV[1], text_sentence)
   end
 
-
+  def operate
+    convert_to_array
+    make_lettered_array
+    convert_to_text_array
+    join_array_into_string
+    capitalize
+    numberize
+    text_sentence
+    write_to_file
+  end
 end
 
-night = NightRead.new
-
-puts night.braille_to_convert
-night.convert_to_array
-night.make_lettered_array
-night.convert_to_text_array
-night.join_array_into_string
-night.capitalize
-night.numberize
-night.text_sentence
-night.write_to_file
+# night = NightRead.new
+#
+# puts night.braille_to_convert
+# night.convert_to_array
+# night.make_lettered_array
+# night.convert_to_text_array
+# night.join_array_into_string
+# night.capitalize
+# night.numberize
+# night.text_sentence
+# night.write_to_file
