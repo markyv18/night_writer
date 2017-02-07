@@ -1,6 +1,6 @@
 require './lib/night_read'
 
-class Dictionary < NightRead
+class Dictionary
   attr_reader :alphabet, :numbers
   def initialize
     @alphabet = { 'a' => ['0.', '..', '..'], 'b' => ['0.', '0.', '..'],
