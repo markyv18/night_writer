@@ -1,64 +1,96 @@
 require_relative './read_in_text'
+require_relative './dictionary'
 
 class NightWrite
 
 attr_reader :braille_output, :text_to_convert
 
-  def initialize
-    read = ReadText.new(ARGV[0])
-    @text_to_convert = read.imported_text.chars
-    @braille_output = []
-    
-    @convert_chars_key = {"a" => ["0.","..",".."], "b" => ["0.","0.",".."], "c" => ["00","..",".."], "d" => ["00",".0",".."],
-    "e" => ["0.",".0",".."], "f" => ["00","0.",".."], "g" => ["00","00",".."], "h" => ["0.","00",".."],
-    "i" => [".0","0.",".."], "j" => [".0","00",".."], "k" => ["0.","..","0."], "l" => ["0.","0.","0."],
-    "m" => ["00","..","0."], "n" => ["00",".0","0."], "o" => ["0.",".0","0."], "p" => ["00","0.","0."], "q" => ["00","00","0."],
-    "r" => ["0.","00","0."], "s" => [".0","0.","0."], "t" => [".0","00","0."], "u" => ["0.","..","00"],
-    "v" => ["0.","0.","00"], "w" => [".0","00",".0"], "x" => ["00","..","00"], "y" => ["00",".0","00"],
-    "z" => ["0.",".0","00"], "!" => ["..","00","0."], "'" => ["..","..","0."], "," => ["..","0.",".."],
-    "-" => ["..","..","00"], "." => ["..","00",".0"], "?" => ["..","0.","00"], :caps => ["..", "..", ".0"],
-    "#" => [".0", ".0", "00"], " " => ["..","..",".."]}
-    @convert_nums_key  = {"0" => ".000..", "1" => "0.....", "2" => "0.0...","3" => "00....", "4" => "00.0..",
-      "5" => "0..0..","6" => "000...", "7" => "0000..", "8" => "0.00..","9" =>  ".00...", :number => ".0.0.."}
-    @braille_print1 = []
-    @braille_print2 = []
-    @braille_print3 = []
-    @braille_p1 = []
-    @braille_p2 = []
-    @braille_p3 = []
+  def initialize(read_in_text = ARGV[0])
+    @dictionary = Dictionary.new
+    @alpha = @dictionary.alphabet
+    @nums = @dictionary.numbers
+    read = ReadText.new(read_in_text)
+    @text = read.imported_text.chomp.chars
+    @conversion_text = []
+    find_nums_and_caps_in_msg
+    number_converter
+    @text2 = @text1
+    @text3 = @text1
+require "pry"; binding.pry
   end
+  # returns equal @text1, @text2, @text3
+
+  def find_nums_and_caps_in_msg
+    @text.each do |char|
+      if ("A".."z") === char
+        if char == char.upcase
+        @conversion_text << "^#{char.downcase}"
+        end
+      else
+        @conversion_text << char
+      end
+    end
+  end
+  #returns @conversion_text
+
+  def number_converter
+    @text1 = @conversion_text.map do |char|
+      if @nums.has_value?(char)
+        @nums.key(char)
+      else
+        char
+      end
+    end
+  end
+  #converts numbers to braille number representation and returns @text1
 
   def convert_to_braille
-    convert_text_to_braille
+    convert_braille_first_line
+    convert_braille_second_line
+    convert_braille_third_line
     write_to_braille_file
   end
 
+  def convert_braille_first_line
+      @braille_line1 = @text1.map do |char|
+        if @alpha.has_value?(char) || @nums.has_value?(char)
+         @alpha.values_at(char)[0]
 
+        braille_line_one_conversion(char)
 
-
-  def convert_text_to_braille
-    @text_to_convert.each do |char|
-      if @convert_chars_key.has_key?(char)
-        @braille_output << @convert_chars_key.values_at(char)
-      # elsif @convert_nums_key.key?(char)
-      #   convert_numbers_to_braille(char)
-      # elsif letters_to_braille.key?(char.downcase)
-      #   braille << letters_to_braille[:capital] << letters_to_braille[char.downcase]
       end
     end
-    @braille_output.each do |two_line|
-      @braille_print1 << two_line[0]
-      @braille_print2 << two_line[1]
-      @braille_print3 << two_line[2]
-    end
-    @braille_print1 << "\n"
-    @braille_print2 << "\n"
-    @braille_print3 << "\n"
-    @braille_p1 = @braille_print1.join
-    @braille_p2 = @braille_print2.join
-    @braille_p3 = @braille_print3.join
   end
 
+
+  def braille_line_one_conversion(char)
+        if char.upcase?
+
+          @alpha.has_key?(char)
+           @alpha.values_at(char)[0]
+
+        @text_to_convert[index].each do |char|
+          # elsif @convert_nums_key.key?(char)
+          #   convert_numbers_to_braille(char)
+          # elsif letters_to_braille.key?(char.downcase)
+          #   braille << letters_to_braille[:capital] << letters_to_braille[char.downcase]
+          end
+        end
+    end
+
+  #   @braille_output.each do |two_line|
+  #     @braille_print1 << two_line[0]
+  #     @braille_print2 << two_line[1]
+  #     @braille_print3 << two_line[2]
+  #   end
+  #   @braille_print1 << "\n"
+  #   @braille_print2 << "\n"
+  #   @braille_print3 << "\n"
+  #   @braille_p1 = @braille_print1.join
+  #   @braille_p2 = @braille_print2.join
+  #   @braille_p3 = @braille_print3.join
+  # end
+  #
 
 
   # def braille_numbers_to_text(message, char)
@@ -124,10 +156,24 @@ attr_reader :braille_output, :text_to_convert
   end
 
   def write_to_braille_file
-    File.write(ARGV[1], @braille_p1)
+    File.write("./data/" + ARGV[1], @braille_p1)
+    p "Created #{ARGV[1]} containing #{@braille_count} characters"
   end
 
 end
 
 night = NightWrite.new
 night.convert_to_braille
+
+
+
+
+
+
+
+
+
+
+
+
+#
