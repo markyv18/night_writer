@@ -3,15 +3,15 @@ require './lib/dictionary'
 # Imports braille file and writes conversion to Message.txt
 
 class NightRead
-  attr_reader :text_output,
-              :braille_array,
+  attr_reader :braille,
+              :alphabet_hash,
+              :numbers_hash,
               :braille_sentence,
+              :braille_array,
               :braille_letter,
               :text_array,
               :text_sentence,
-              :alphabet_hash,
-              :numbers_hash
-  attr_accessor :braille
+              :text_output
 
   def initialize(read_file = ARGV[0])
     read = ReadBraille.new(read_file)
@@ -89,6 +89,6 @@ end
 # night.text_sentence
 # night.write_to_file
 
-night = NightRead.new
-night.operate
-puts night.text_sentence
+# night = NightRead.new
+# night.operate
+# puts night.text_sentence
