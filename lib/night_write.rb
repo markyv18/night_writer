@@ -42,53 +42,70 @@ attr_reader :braille_output, :text_to_convert
     end
   end
 
-  def convert_to_braille
+  def convert_to_braille_runner
     convert_braille_first_line
     convert_braille_second_line
     convert_braille_third_line
     print_braille_lines
+    # break_braille_into_lines_less_than_80
+    #depending on what break_braille_into_lines_less_than_80 returns
+    #alter write_to_braille_file to print accordingly
     write_to_braille_file
-    break_braille_into_lines_less_than_80
   end
 
   def convert_braille_first_line
     line = @message_ready_for_braille.map do |char|
       @alpha.values_at(char)[0][0]
     end
-    @braille_line1 = line.join
+    line.join
   end
 
   def convert_braille_second_line
     line = @message_ready_for_braille.map do |char|
       @alpha.values_at(char)[0][1]
     end
-    @braille_line2 = line.join
+    line.join
   end
 
   def convert_braille_third_line
     line = @message_ready_for_braille.map do |char|
       @alpha.values_at(char)[0][2]
     end
-    @braille_line3 = line.join
+    line.join
   end
 
   def break_braille_into_lines_less_than_80
+    if convert_braille_first_line > 80
+
+    if convert_braille_first_line > 80
+      
+    if convert_braille_first_line > 80
+
+
+    index = 0
+    while index < braille_translation.length
+      if  braille_translation[index].length > 80
+        braille_translation[index + 3] = braille_translation[index][80..-1]
+        braille_translation[index] = braille_translation[index][0..79]
+      end
+      index += 1
+    end
+    braille_translation
   end
 
   def print_braille_lines
-    @braille = @braille_line1 + "\n" + @braille_line2 + "\n" + @braille_line3
+    convert_braille_first_line + "\n" + convert_braille_second_line + "\n" + convert_braille_third_line
   end
 
   def write_to_braille_file
     File.write("./data/" + ARGV[1], print_braille_lines)
-    p "Created #{ARGV[1]} containing #{@braille_line1.size} characters"
+    p "Created #{ARGV[1]} containing #{convert_braille_first_line.size} characters"
   end
 
 end
 
 night = NightWrite.new
-night.convert_to_braille
-
+night.convert_to_braille_runner
 
 
 
