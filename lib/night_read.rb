@@ -3,63 +3,63 @@ require './lib/dictionary'
 # Imports braille file and writes conversion to Message.txt
 
 class NightRead
-  attr_reader :text_output,
-              :braille_to_convert,
-              :braille_array,
+  attr_reader :braille,
+              :alphabet_hash,
+              :numbers_hash,
               :braille_sentence,
+              :braille_array,
               :braille_letter,
               :text_array,
               :text_sentence,
-              :alphabet_hash,
-              :numbers_hash
+              :text_output
 
   def initialize(read_file = ARGV[0])
     read = ReadBraille.new(read_file)
-    @braille_to_convert = read.imported_braille
+    @braille = read.imported_braille
     dictionary = Dictionary.new
     @alphabet_hash = dictionary.alphabet
     @numbers_hash = dictionary.numbers
     @braille_sentence = []
   end
 
-  def convert_to_array
+  def convert_to_array(braille_to_convert = braille)
     @braille_array = braille_to_convert.split(/\n/)
-    reduce_to_one_line
+    reduce_to_3_lines(braille_array)
   end
 
-  def reduce_to_one_line
-    combine_line until braille_array[3].nil?
+  def reduce_to_3_lines(array)
+    combine_line(array) until array[3].nil?
   end
 
-  def combine_line
+  def combine_line(array)
     for i in 0..2
-      braille_array[i] += braille_array.delete_at(3)
+      array[i] += array.delete_at(3)
     end
   end
 
-  def make_lettered_array
-    make_letter until braille_array[0].empty?
+  def make_lettered_array(array = braille_array)
+    make_letter(array) until array[0].empty?
   end
 
-  def make_letter
-    @braille_letter = braille_array.map { |line| line.slice!(0..1) }
+  def make_letter(array)
+    @braille_letter = array.map { |line| line.slice!(0..1) }
     braille_sentence << braille_letter
   end
 
-  def convert_to_text_array
-    @text_array = braille_sentence.map { |letter| alphabet_hash.key(letter) }
+  def convert_to_text_array(array = braille_sentence)
+    @text_array = array.map { |letter| alphabet_hash.key(letter) }
   end
 
-  def join_array_into_string
-    @text_sentence = text_array.join
+  def join_array_into_string(array = text_array)
+    @text_sentence = array.join
   end
 
-  def capitalize
-    text_sentence.gsub!(/\^./) { |letter| letter.delete('^').upcase }
+  def capitalize(text = text_sentence)
+    text.gsub!(/\^./) { |letter| letter.delete('^').upcase }
   end
 
-  def numberize
-    text_sentence.gsub!(/\#./) { |letter| numbers_hash[letter] }
+  def numberize(text = text_sentence)
+    text.gsub!(/\#./) { |letter| numbers_hash[letter] }
   end
 
   def write_to_file
@@ -74,18 +74,21 @@ class NightRead
     capitalize
     numberize
     text_sentence
-    write_to_file
   end
 end
 
 # night = NightRead.new
-#
+
 # puts night.braille_to_convert
 # night.convert_to_array
 # night.make_lettered_array
 # night.convert_to_text_array
-# night.join_array_into_string
-# night.capitalize
+# p night.join_array_into_string
+# p night.capitalize
 # night.numberize
 # night.text_sentence
 # night.write_to_file
+
+# night = NightRead.new
+# night.operate
+# puts night.text_sentence
