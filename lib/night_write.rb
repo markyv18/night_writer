@@ -9,155 +9,79 @@ attr_reader :braille_output, :text_to_convert
     @dictionary = Dictionary.new
     @alpha = @dictionary.alphabet
     @nums = @dictionary.numbers
-    read = ReadText.new(read_in_text)
-    @text = read.imported_text.chomp.chars
-    @conversion_text = []
-    find_nums_and_caps_in_msg
-    number_converter
-    @text2 = @text1
-    @text3 = @text1
-require "pry"; binding.pry
+    read = ReadText.new(read_in_text).imported_text.chomp.chars
+    prepare_message_for_conversion_braille(read)
   end
-  # returns equal @text1, @text2, @text3
 
-  def find_nums_and_caps_in_msg
-    @text.each do |char|
-      if ("A".."z") === char
-        if char == char.upcase
-        @conversion_text << "^#{char.downcase}"
-        end
-      else
-        @conversion_text << char
-      end
-    end
+  def prepare_message_for_conversion_braille(read)
+    number_converter(read)
+    find_caps_in_msg
   end
-  #returns @conversion_text
 
-  def number_converter
-    @text1 = @conversion_text.map do |char|
+  def number_converter(text)
+    @message_with_numbers_converted = []
+    text.each do |char|
       if @nums.has_value?(char)
-        @nums.key(char)
+        @message_with_numbers_converted << @nums.key(char)[0]
+        @message_with_numbers_converted << @nums.key(char)[1]
       else
-        char
+        @message_with_numbers_converted << char
       end
     end
   end
-  #converts numbers to braille number representation and returns @text1
+
+  def find_caps_in_msg
+    @message_ready_for_braille = []
+    @message_with_numbers_converted.each do |char|
+      if ("A".."z") === char && (char == char.upcase)
+        @message_ready_for_braille << "^"
+        @message_ready_for_braille << char.downcase
+      else
+        @message_ready_for_braille << char
+      end
+    end
+  end
 
   def convert_to_braille
     convert_braille_first_line
     convert_braille_second_line
     convert_braille_third_line
+    print_braille_lines
     write_to_braille_file
+    break_braille_into_lines_less_than_80
   end
 
   def convert_braille_first_line
-      @braille_line1 = @text1.map do |char|
-        if @alpha.has_value?(char) || @nums.has_value?(char)
-         @alpha.values_at(char)[0]
-
-        braille_line_one_conversion(char)
-
-      end
+    line = @message_ready_for_braille.map do |char|
+      @alpha.values_at(char)[0][0]
     end
+    @braille_line1 = line.join
   end
 
-
-  def braille_line_one_conversion(char)
-        if char.upcase?
-
-          @alpha.has_key?(char)
-           @alpha.values_at(char)[0]
-
-        @text_to_convert[index].each do |char|
-          # elsif @convert_nums_key.key?(char)
-          #   convert_numbers_to_braille(char)
-          # elsif letters_to_braille.key?(char.downcase)
-          #   braille << letters_to_braille[:capital] << letters_to_braille[char.downcase]
-          end
-        end
+  def convert_braille_second_line
+    line = @message_ready_for_braille.map do |char|
+      @alpha.values_at(char)[0][1]
     end
+    @braille_line2 = line.join
+  end
 
-  #   @braille_output.each do |two_line|
-  #     @braille_print1 << two_line[0]
-  #     @braille_print2 << two_line[1]
-  #     @braille_print3 << two_line[2]
-  #   end
-  #   @braille_print1 << "\n"
-  #   @braille_print2 << "\n"
-  #   @braille_print3 << "\n"
-  #   @braille_p1 = @braille_print1.join
-  #   @braille_p2 = @braille_print2.join
-  #   @braille_p3 = @braille_print3.join
-  # end
-  #
+  def convert_braille_third_line
+    line = @message_ready_for_braille.map do |char|
+      @alpha.values_at(char)[0][2]
+    end
+    @braille_line3 = line.join
+  end
 
-
-  # def braille_numbers_to_text(message, char)
-  #   next_character_index = message.index(char) + 1
-  #   next_character = message[message.index(char)+ 1]
-  #   text << number_to_braille.invert[next_character]
-  #   message.delete_at(next_character_index)
-  # end
-  #
-  # def braille_capital_to_text(message,char)
-  #   next_character = message[message.index(char)+ 1]
-  #   message.delete_at message.index(char)
-  #   text << letters_to_braille.invert[next_character].upcase
-  # end
-  #
-  # def braille_to_text(message)
-  #     message.each do |char|
-  #     next_character_index = message.index(char) + 1
-  #     next_character = message[message.index(char)+ 1]
-  #       case
-  #       when char == "......"
-  #         text << letters_to_braille.invert[char]
-  #       when char == ".0.0.."
-  #         braille_numbers_to_text(message,char)
-  #       when number_to_braille.key?(text.last)
-  #           text << number_to_braille.invert[char]
-  #       when char == ".....0"
-  #         braille_capital_to_text(message,char)
-  #       else
-  #         text << letters_to_braille.invert[char]
-  #     end
-  # end
-  # text.join
-  # end
-  #
-  # def convert!(message)
-  #   if message[0][0] == "." || message[0][0] == "0"
-  #     braille_to_text(message)
-  #   else
-  #     text_to_braille(message)
-  #   end
-  # end
-  #
-  # def wrap_text(converted_text)
-  #   line_limit      = []
-  #   converted_text  = converted_text.chars
-  #   character_split = converted_text.map {|char| char.scan(/.{1,2}/)}
-  #   split_line      = character_split.transpose.map {|line| line.join}
-  #   until split_line[0].empty?
-  #     split_line.each do |line|
-  #         line_limit << line.slice!(0..79)+"\n"
-  #       end
-  #   end
-  # line_limit.join("")
-  # end
-#
-# end
+  def break_braille_into_lines_less_than_80
+  end
 
   def print_braille_lines
-    p @braille_p1
-    p @braille_p2
-    p @braille_p3
+    @braille = @braille_line1 + "\n" + @braille_line2 + "\n" + @braille_line3
   end
 
   def write_to_braille_file
-    File.write("./data/" + ARGV[1], @braille_p1)
-    p "Created #{ARGV[1]} containing #{@braille_count} characters"
+    File.write("./data/" + ARGV[1], print_braille_lines)
+    p "Created #{ARGV[1]} containing #{@braille_line1.size} characters"
   end
 
 end
