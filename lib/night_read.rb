@@ -77,18 +77,7 @@ class NightRead
   end
 end
 
-# night = NightRead.new
+night = NightRead.new
 
-# puts night.braille_to_convert
-# night.convert_to_array
-# night.make_lettered_array
-# night.convert_to_text_array
-# p night.join_array_into_string
-# p night.capitalize
-# night.numberize
-# night.text_sentence
-# night.write_to_file
-
-# night = NightRead.new
-# night.operate
-# puts night.text_sentence
+night.operate
+night.write_to_file
