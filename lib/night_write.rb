@@ -63,7 +63,7 @@ class NightWrite
     array.map! do |line|
       line.scan(/.{1,80}/)
     end
-  end
+  end              
 
   def make_new_lines(array = combined_braille_array)
     array.each_index do |i|
@@ -78,5 +78,33 @@ class NightWrite
 
 end
 
-night = NightWrite.new
-night.operate
+# night = NightWrite.new
+# night.operate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
