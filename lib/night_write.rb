@@ -63,12 +63,12 @@ class NightWrite
     array.map! do |line|
       line.scan(/.{1,80}/)
     end
-  end              
+  end
 
   def make_new_lines(array = combined_braille_array)
-    array.each_index do |i|
-      seperated_braille_array << array[0][i] + "\n" + array[1][i] + "\n" + array[2][i] + "\n"
-    end
+      array[0].each_index do |i|
+        seperated_braille_array << array[0][i] + "\n" + array[1][i] + "\n" + array[2][i] + "\n"
+      end
   end
 
   def write_to_braille_file(array = seperated_braille_array)
