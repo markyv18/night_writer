@@ -51,6 +51,8 @@ class NightWrite
 
   def combine_braille_array(array = braille_array)
     array.each { |item| combine_letter(item) }
+    # require "pry"; binding.pry
+
   end
 
   def combine_letter(array)
@@ -78,5 +80,5 @@ class NightWrite
 
 end
 
-night = NightWrite.new
-night.operate
+# night = NightWrite.new
+# night.operate
