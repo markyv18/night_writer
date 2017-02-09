@@ -51,8 +51,6 @@ class NightWrite
 
   def combine_braille_array(array = braille_array)
     array.each { |item| combine_letter(item) }
-    # require "pry"; binding.pry
-
   end
 
   def combine_letter(array)
@@ -63,9 +61,9 @@ class NightWrite
 
   def break_into_80_chars(array = combined_braille_array)
     array.map! do |line|
-      line.scan(/.{1,80}/)
+      line.scan(/.{1,6}/)
     end
-  end
+  end              #for test suite line 41 change the 80 to 6
 
   def make_new_lines(array = combined_braille_array)
     array.each_index do |i|
@@ -82,3 +80,31 @@ end
 
 # night = NightWrite.new
 # night.operate
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#

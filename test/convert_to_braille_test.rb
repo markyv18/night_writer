@@ -37,9 +37,11 @@ class ConvertToBrailleTest < Minitest::Test
     assert_equal ["..0.0..000", "..00.0.00.", ".0....00.."], write.combined_braille_array
   end
 
-  def test_break_into_80_chars(array = combined_braille_array)
+  #for simplicity of test, showcasing split ability with smaller number
+  def test_break_into_6_chars
     write = NightWrite.new('message.txt')
-    
+    write.combine_braille_array([['..', '..', '.0'],['0.', '00', '..'],['0.', '.0', '..'],['.0', '.0', '00'],['00', '0.', '..']])
+    assert_equal ["..0.0.",".000"], ["..00.0",".00."], [".0....", "00.."], write.break_into_80_chars(write.combined_braille_array)
   end
 
 
@@ -47,9 +49,9 @@ class ConvertToBrailleTest < Minitest::Test
 
 end
 
-# p "hit enter for some fun and the tests to run"
-# gets.chomp
-# Launchy.open("https://www.youtube.com/watch?v=GbfVmzF7N4g")
+p "hit enter for some fun and the tests to run"
+gets.chomp
+Launchy.open("https://www.youtube.com/watch?v=GbfVmzF7N4g")
 
 
 
