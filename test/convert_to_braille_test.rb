@@ -37,21 +37,27 @@ class ConvertToBrailleTest < Minitest::Test
     assert_equal ["..0.0..000", "..00.0.00.", ".0....00.."], write.combined_braille_array
   end
 
-  #for simplicity of test, showcasing split ability with smaller number
-  def test_break_into_6_chars
+  def test_multi_things
     write = NightWrite.new('message.txt')
-    write.combine_braille_array([['..', '..', '.0'],['0.', '00', '..'],['0.', '.0', '..'],['.0', '.0', '00'],['00', '0.', '..']])
-    assert_equal ["..0.0.",".000"], ["..00.0",".00."], [".0....", "00.."], write.break_into_80_chars(write.combined_braille_array)
+    a = write.number_converter("He6")
+    b = write.find_caps_in_msg(a)
+    assert_equal ["^","h","e","#","f"], write.make_text_array(b)
   end
 
-
-
+  def test_multi_things2
+    write = NightWrite.new('message.txt')
+    a = write.number_converter("He6")
+    b = write.find_caps_in_msg(a)
+    c = write.make_text_array(b)
+    assert_equal [['..', '..', '.0'],['0.', '00', '..'],['0.', '.0', '..'],['.0', '.0', '00'],['00', '0.', '..']], write.convert_to_braille(c)
+  end
 
 end
 
 p "hit enter for some fun and the tests to run"
 gets.chomp
 Launchy.open("https://www.youtube.com/watch?v=GbfVmzF7N4g")
+
 
 
 

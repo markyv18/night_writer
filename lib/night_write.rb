@@ -61,9 +61,9 @@ class NightWrite
 
   def break_into_80_chars(array = combined_braille_array)
     array.map! do |line|
-      line.scan(/.{1,6}/)
+      line.scan(/.{1,80}/)
     end
-  end              #for test suite line 41 change the 80 to 6
+  end              
 
   def make_new_lines(array = combined_braille_array)
     array.each_index do |i|
